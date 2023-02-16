@@ -1,7 +1,7 @@
-DOCKER_REPO = jmalloc/echo-server
+DOCKER_REPO = piyushroshan/echo-server
 DOCKER_PLATFORMS += linux/amd64
-DOCKER_PLATFORMS += linux/arm64
-
+#DOCKER_PLATFORMS += linux/arm64
+DOCKER_TAGS = latest
 -include .makefiles/Makefile
 -include .makefiles/pkg/go/v1/Makefile
 -include .makefiles/pkg/docker/v1/Makefile

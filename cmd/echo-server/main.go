@@ -81,9 +81,9 @@ func handler(wr http.ResponseWriter, req *http.Request) {
 		sendServerHostnameString = v
 	}
 
-	sendServerHostname := !strings.EqualFold(
+	sendServerHostname := strings.EqualFold(
 		sendServerHostnameString,
-		"false",
+		"true",
 	)
 
 	if websocket.IsWebSocketUpgrade(req) {
@@ -91,7 +91,6 @@ func handler(wr http.ResponseWriter, req *http.Request) {
 	} else if req.URL.Path == "/.ws" {
 		wr.Header().Add("Content-Type", "text/html")
 		wr.WriteHeader(200)
-		io.WriteString(wr, websocketHTML) // nolint:errcheck
 	} else if req.URL.Path == "/.sse" {
 		serveSSE(wr, req, sendServerHostname)
 	} else {
@@ -149,7 +148,11 @@ func serveWebSocket(wr http.ResponseWriter, req *http.Request, sendServerHostnam
 }
 
 func serveHTTP(wr http.ResponseWriter, req *http.Request, sendServerHostname bool) {
-	wr.Header().Add("Content-Type", "text/plain")
+        contentType := req.Header.Get("Response-type")
+        if contentType == "" {
+		contentType = "application/json"
+	}
+	wr.Header().Add("Content-Type", contentType)
 	wr.WriteHeader(200)
 
 	if sendServerHostname {
@@ -251,11 +254,11 @@ func writeSSEField(
 
 // writeRequest writes request headers to w.
 func writeRequest(w io.Writer, req *http.Request) {
-	fmt.Fprintf(w, "%s %s %s\n", req.Method, req.URL, req.Proto)
-	fmt.Fprintln(w, "")
+	//fmt.Fprintf(w, "%s %s %s\n", req.Method, req.URL, req.Proto)
+	//fmt.Fprintln(w, "")
 
-	fmt.Fprintf(w, "Host: %s\n", req.Host)
-	printHeaders(w, req.Header)
+	//fmt.Fprintf(w, "Host: %s\n", req.Host)
+	//printHeaders(w, req.Header)
 
 	var body bytes.Buffer
 	io.Copy(&body, req.Body) // nolint:errcheck
